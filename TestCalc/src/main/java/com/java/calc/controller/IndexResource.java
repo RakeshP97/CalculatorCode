@@ -34,7 +34,7 @@ public class IndexResource {
 		LOGGER.info("Entering getCalculate method with input:"+input);
 		double result = calculatorService.calculate(input);
 		Response res = new Response();
-		res.setValue(new BigDecimal(result,new MathContext(5)).toString());
+		res.setValue(new BigDecimal(result,new MathContext(9)).toString());
 		LOGGER.info("Calculated results is:"+res.getValue());
 		return res;
 	}
@@ -44,7 +44,7 @@ public class IndexResource {
 	public @ResponseBody Response getPreviousResponse() {
 		double result = calculatorService.getPreviousValue();
 		Response res = new Response();
-		res.setValue(new BigDecimal(result,new MathContext(5)).toString());
+		res.setValue(new BigDecimal(result,new MathContext(9)).toString());
 		LOGGER.info("Previous response is:"+res.getValue());
 		return res;
 	}
