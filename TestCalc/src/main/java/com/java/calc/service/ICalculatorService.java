@@ -9,7 +9,7 @@ public interface ICalculatorService {
      * @param input
      * @return
      */
-   public double calculate(String input);
+   public double calculate(final String firstNumber, final String secondNumber, final String operator);
     
     /**
      * Method used to get the previous results

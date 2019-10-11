@@ -10,7 +10,8 @@ public enum Operator {
     ADD("+"),
     SUBSTRACT("-"),
     MULTIPLY("*"),
-    DIVIDE("/");
+    DIVIDE("/"),
+    SQRT("@");
 
     private String sign;
 

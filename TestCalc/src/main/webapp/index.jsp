@@ -1,6 +1,3 @@
-<%--
- Calculator Home page
---%>
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
@@ -13,11 +10,47 @@
 function onClick(value){
 	console.log('Enter value is '+value);
 
+	var firstNumber = 0;
+	var SecondNumber = 0;
+	var operator="ADD";
+	if(value.indexOf('+')>0)
+		{
+	     firstNumber = value.substring(0, value.indexOf('+'));
+	     SecondNumber = value.substring(value.indexOf('+')+1);
+	     operator="ADD";
+		}
+	   else if (value.indexOf('-')>0)
+		{
+		     firstNumber = value.substring(0, value.indexOf('-'));
+		     SecondNumber = value.substring(value.indexOf('-')+1);
+		     operator="SUBSTRACT";
+		}
+		 else if (value.indexOf('*')>0)
+			{
+			     firstNumber = value.substring(0, value.indexOf('*'));
+			     SecondNumber = value.substring(value.indexOf('*')+1);
+			     operator="MULTIPLY";
+			}
+			 else if (value.indexOf('/')>0)
+				{
+				     firstNumber = value.substring(0, value.indexOf('/'));
+				     SecondNumber = value.substring(value.indexOf('/')+1);
+				     operator="DIVIDE";
+				}
+			 else if (value.indexOf('@')>=0)
+				{
+				     firstNumber = value.substring(value.indexOf('@')+1);
+				     operator="SQRT";
+				}
+    console.log('Entered value is firstNumber '+firstNumber +':::'+SecondNumber+':::'+operator);
 	jQuery.ajax({
-        type: "GET",
-        url : 'http://localhost:8081/TestCalc/rest/calculate?input='+value,
+        type: "PUT",
+        url : "http://localhost:8081/TestCalc/rest/calculate",
+        dataType: "json",
+        contentType: "application/json",
+        data: JSON.stringify({"firstNumber":firstNumber,"secondNumber":SecondNumber,"operator":operator}),
         timeout: 15000,
-        success: function (response) {
+        success: function (response, textStatus, xhr) {
             console.log('success: '+response.value);  
             $('#display').val(response.value);
         },
@@ -35,7 +68,7 @@ function perviousValue(){
 
 	jQuery.ajax({
         type: "GET",
-        url : 'http://localhost:8081/TestCalc/rest/calculatePrev',
+        url : 'http://localhost:8081/TestCalc/rest/getPreviousResult',
         timeout: 15000,
         success: function (response) {
             console.log('Previous calculated value is : '+response.value);  
@@ -69,6 +102,16 @@ function clearMemory(){
         }
 	})
 }
+
+ jQuery(document).ready(function(){
+            $('#display').keypress(function() {
+                if ($('#display').val().length < 10) {
+                    $('#display').val($('#display').val().substring(0,9));
+                }
+                
+            }) 
+
+        });
 </script>
 </head>
 <body>
@@ -76,7 +119,7 @@ function clearMemory(){
          <table>
             <tr>
                <td colspan="4">
-                  <input type="text" name="display" id="display" maxlength="11" disabled>
+                  <input type="text" name="display" id="display" maxlength="8" max="999999999" readonly="readonly">
                </td>
             </tr>
             <tr>

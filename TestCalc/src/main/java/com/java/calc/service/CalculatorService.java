@@ -8,104 +8,76 @@ import com.java.calc.common.Operator;
 
 @Service
 public class CalculatorService implements ICalculatorService {
-	
-	private static double prevResults =0.0;
+
+	private double prevResults = 0.0;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CalculatorService.class);
 
-
-    /**
-     * Method is used for calculation for given input by parsing the input
-     *
-     * @param input
-     * @return
-     */
+	/**
+	 * Method is used for calculation based on input given and return the results
+	 *
+	 * @param firstNumber
+	 * @param secondNumber
+	 * @param operator
+	 * 
+	 * @return
+	 */
 	@Override
-	public double calculate(String input) {
-		
-		LOGGER.info("Entering into Calculate method input: {}", input);
+	public double calculate(final String firstNumber, final String secondNumber, final String operator) {
+
+		LOGGER.info("Entering into Calculate method firstNumber: {} and secondNumber {} and operator {}", firstNumber,secondNumber,operator);
 		double result = 0.0;
-		Operator operator = Operator.ADD;
-		String[] opreands = null;
-		
-		/*
-		 * If request come for sqrt the we are parsing request and return the response
-		 */
-		if(input.indexOf('@')>-1)
-		{
-			String value = input.substring(input.indexOf('@')+1);
-			result = value!=" " && value!=null ? Math.sqrt(Double.parseDouble(value)):0;
-			prevResults = result;
-			return result;
-		}
-		/*
-		 * Other mathematical operation requests continue to parse the input value 
-		 */
-		if (input.indexOf("+")>0) {
-			opreands = input.split("\\+");
-			operator = Operator.ADD;
-		} else if (input.indexOf("-")>0) {
-			opreands = input.split("-");
-			operator = Operator.SUBSTRACT;
-		} else if (input.indexOf("*")>0) {
-			opreands = input.split("\\*");
-			operator = Operator.MULTIPLY;
-		} else if (input.indexOf("/")>0) {
-			opreands = input.split("\\/");
-			operator = Operator.DIVIDE;
-		}else
-		{
-			opreands = input.split(" ");
-		}
-
-		for (String operand : opreands) {
-			double nextOperand = Double.parseDouble(operand);
-			if (result == 0.0) {
-				result = nextOperand;
-				continue;
-			}
-			switch (operator) {
-			case ADD:
-				result += nextOperand;
-				break;
-			case SUBSTRACT:
-				result -= nextOperand;
-				break;
-			case MULTIPLY:
-				result *= nextOperand;
-				break;
-			case DIVIDE:
-				result /= nextOperand;
-				break;
-			default:
-				LOGGER.error("Unsupported operation is given for calculation: {}", operator);
+		@SuppressWarnings("static-access")
+		Operator operator1 = Operator.ADD.forValue(operator);
+		switch (operator1) {
+		case ADD:
+			result = Double.parseDouble(firstNumber) + Double.parseDouble(secondNumber);
+			break;
+		case SUBSTRACT:
+			result = Double.parseDouble(firstNumber) - Double.parseDouble(secondNumber);
+			break;
+		case MULTIPLY:
+			result = Double.parseDouble(firstNumber) * Double.parseDouble(secondNumber);
+			break;
+		case DIVIDE:
+			if (secondNumber != null && secondNumber != "" && Double.parseDouble(secondNumber) > 0) {
+				result = Double.parseDouble(firstNumber) / Double.parseDouble(secondNumber);
+			} else {
 				throw new RuntimeException("Unsupported operation is given for calculation");
-
 			}
+			break;
+		case SQRT:
+			result = firstNumber != " " && firstNumber != null ? Math.sqrt(Double.parseDouble(firstNumber)) : 0;
+			break;
+		default:
+			LOGGER.error("Unsupported operation is given for calculation: {}", operator);
+			throw new RuntimeException("Unsupported operation is given for calculation");
+
 		}
+
 		prevResults = result;
 		return result;
 
 	}
-	
-	  /**
-     * Method used to return the previous calculated result
-     * 
-     * @return
-     */
+
+	/**
+	 * Method used to return the previous calculated result
+	 * 
+	 * @return
+	 */
 	@Override
-	public double getPreviousValue()
-	{
+	public double getPreviousValue() {
 		return prevResults;
 	}
 
-	 /**
-     * Method used to clear the memory cache
-    * @return
-     */
+	/**
+	 * Method used to clear the memory cache
+	 * 
+	 * @return
+	 */
 	@Override
 	public void clearMemory() {
-		prevResults=0.0;
+		prevResults = 0.0;
 	}
-	
+
 }

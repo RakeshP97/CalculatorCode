@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.java.calc.common.InputDetails;
 import com.java.calc.common.Operator;
 import com.java.calc.service.CalculatorService;
 import com.java.calc.service.ICalculatorService;
@@ -22,17 +24,17 @@ import java.math.BigDecimal;
 import java.math.MathContext;
 
 @Controller
-public class IndexResource {
+public class CalculatorController {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(IndexResource.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CalculatorController.class);
 
 	@Autowired
 	private ICalculatorService calculatorService;
 
-	@RequestMapping(value = "/rest/calculate", method = RequestMethod.GET)
-	public @ResponseBody Response getCalculateResponse(@RequestParam(value="input") String input) {
-		LOGGER.info("Entering getCalculate method with input:"+input);
-		double result = calculatorService.calculate(input);
+	@RequestMapping(value = "/rest/calculate", method = RequestMethod.PUT)
+	public @ResponseBody Response calculateResponse(@RequestBody  InputDetails inputDetails) {
+		LOGGER.info("Entering getCalculate method with input:"+inputDetails);
+		double result = calculatorService.calculate(inputDetails.getFirstNumber(),inputDetails.getSecondNumber(),inputDetails.getOperator());
 		Response res = new Response();
 		res.setValue(new BigDecimal(result,new MathContext(9)).toString());
 		LOGGER.info("Calculated results is:"+res.getValue());
@@ -40,7 +42,7 @@ public class IndexResource {
 	}
 	
 	
-	@RequestMapping(value = "/rest/calculatePrev", method = RequestMethod.GET)
+	@RequestMapping(value = "/rest/getPreviousResult", method = RequestMethod.GET)
 	public @ResponseBody Response getPreviousResponse() {
 		double result = calculatorService.getPreviousValue();
 		Response res = new Response();
@@ -53,8 +55,6 @@ public class IndexResource {
 	public @ResponseBody Response clearMemory() {
 		 calculatorService.clearMemory();
 		Response res = new Response();
-		res.setValue("0");
-		LOGGER.info("After cleared response is:"+res.getValue());
 		return res;
 	}
 }
